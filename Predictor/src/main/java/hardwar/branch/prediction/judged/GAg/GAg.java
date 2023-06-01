@@ -37,7 +37,7 @@ public class GAg implements BranchPredictor {
         // Initialize the SC register
         Bit[] defaults2 = new Bit[BHRSize];
         for (int i = 0; i < SCSize; i++)
-            defaults[i] = Bit.ZERO;
+            defaults2[i] = Bit.ZERO;
         SC = new SIPORegister("SC", SCSize, defaults2);
 
     }
