@@ -33,21 +33,6 @@ public class GAg implements BranchPredictor {
 
         // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
         this.PHT = new PageHistoryTable((int) Math.pow(2, BHRSize), SCSize);
-        for (int i = 0; i < (int) Math.pow(2, BHRSize); i ++){
-            String st = Integer.toBinaryString(i);
-            Bit bits[];
-            bits = new Bit[st.length()];
-            for (int j = 0; j < st.length(); j ++){
-                if (st.charAt(j) == '0')
-                    bits[j] = Bit.ZERO;
-                else
-                    bits[j] = Bit.ONE;
-            }
-            Bit[] values = new Bit[SCSize];
-            for (int j = 0; j < SCSize; j++)
-                values[j] = Bit.ZERO;
-            this.PHT.put(bits, values);
-        }
 
         // Initialize the SC register
         SC = new SIPORegister(null, SCSize, defaults);
