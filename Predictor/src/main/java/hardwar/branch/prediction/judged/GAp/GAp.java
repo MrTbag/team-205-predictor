@@ -55,6 +55,7 @@ public class GAp implements BranchPredictor {
         for (int i = branchInstructionSize; i < branchInstructionSize + BHR.getLength(); i++){
             concat[i] = BHR.read()[i - branchInstructionSize];
         }
+        this.PAPHT.putIfAbsent(concat, getDefaultBlock());
         SC.load(PAPHT.get(concat));
         return BranchResult.of(SC.read()[0].getValue());
     }
