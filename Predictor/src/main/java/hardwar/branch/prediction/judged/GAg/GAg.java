@@ -28,7 +28,7 @@ public class GAg implements BranchPredictor {
        
         Bit[] defaults = new Bit[BHRSize];
         for (int i = 0; i < BHRSize; i++)
-            defaults[i] = Bit.ZERO;
+            defaults[i] = null;
         this.BHR = new SIPORegister("BHR", BHRSize, defaults);
 
         // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
@@ -37,7 +37,7 @@ public class GAg implements BranchPredictor {
         // Initialize the SC register
         Bit[] defaults2 = new Bit[BHRSize];
         for (int i = 0; i < SCSize; i++)
-            defaults2[i] = Bit.ZERO;
+            defaults2[i] = null;
         SC = new SIPORegister("SC", SCSize, defaults2);
 
     }
