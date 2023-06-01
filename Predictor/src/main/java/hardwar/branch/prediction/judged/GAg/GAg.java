@@ -35,7 +35,10 @@ public class GAg implements BranchPredictor {
         this.PHT = new PageHistoryTable(1 << BHRSize, SCSize);
 
         // Initialize the SC register
-        SC = new SIPORegister(null, SCSize, defaults);
+        Bit[] defaults2 = new Bit[BHRSize];
+        for (int i = 0; i < SCSize; i++)
+            defaults[i] = Bit.ZERO;
+        SC = new SIPORegister("SC", SCSize, defaults2);
 
     }
 
