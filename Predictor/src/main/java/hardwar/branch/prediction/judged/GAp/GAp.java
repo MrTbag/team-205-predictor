@@ -28,14 +28,15 @@ public class GAp implements BranchPredictor {
         this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        this.BHR = new SIPORegister("BHR", BHRSize, null);
 
         // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
-        PAPHT = null;
+        PAPHT = new PerAddressPredictionHistoryTable(branchInstructionSize,
+             1 << BHRSize, SCSize);
 
         // Initialize the SC register
-        SC = null;
+        SC = new SIPORegister("SC", SCSize, null);
     }
 
     /**
@@ -47,7 +48,15 @@ public class GAp implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
-        return BranchResult.NOT_TAKEN;
+        Bit[] concat = new Bit[branchInstructionSize + BHR.getLength()];
+        for (int i = 0; i < branchInstructionSize; i++){
+            concat[i] = branchInstruction.getInstructionAddress()[i];
+        }
+        for (int i = branchInstructionSize; i < branchInstructionSize + BHR.getLength(); i++){
+            concat[i] = BHR.read()[i - branchInstructionSize];
+        }
+        SC.load(PAPHT.get(concat));
+        return BranchResult.of(SC.read()[0].getValue());
     }
 
     /**
@@ -58,7 +67,17 @@ public class GAp implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
-        // TODO : complete Task 2
+        Bit[] concat = new Bit[branchInstructionSize + BHR.getLength()];
+        for (int i = 0; i < branchInstructionSize; i++){
+            concat[i] = branchInstruction.getInstructionAddress()[i];
+        }
+        for (int i = branchInstructionSize; i < branchInstructionSize + BHR.getLength(); i++){
+            concat[i] = BHR.read()[i - branchInstructionSize];
+        }
+        SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
+        PAPHT.put(concat, SC.read());
+        this.BHR.insert(this.SC.read()[0]);
+s
     }
 
 
