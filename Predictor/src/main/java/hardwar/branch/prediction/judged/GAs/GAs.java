@@ -29,19 +29,21 @@ public class GAs implements BranchPredictor {
      */
     public GAs(int BHRSize, int SCSize, int branchInstructionSize, int KSize, HashMode hashmode) {
         // TODO: complete the constructor
-        this.branchInstructionSize = 0;
-        this.KSize = 0;
+        this.branchInstructionSize = branchInstructionSize;
+        this.KSize = KSize;
         this.hashMode = HashMode.XOR;
 
         // Initialize the BHR register with the given size and no default value
-        BHR = null;
+        this.BHR = new SIPORegister("BHR", BHRSize, null);
 
         // Initializing the PAPHT with K bit as PHT selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
+        new PerAddressPredictionHistoryTable(branchInstructionSize,
+             1 << BHRSize, SCSize);
         PSPHT = null;
 
         // Initialize the saturating counter
-        SC = null;
+        SC = new SIPORegister("SC", SCSize, null);
     }
 
     /**
