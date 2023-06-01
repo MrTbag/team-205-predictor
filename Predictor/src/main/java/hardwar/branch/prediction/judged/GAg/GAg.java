@@ -43,7 +43,9 @@ public class GAg implements BranchPredictor {
                 else
                     bits[j] = Bit.ONE;
             }
-            Bit[] values = {Bit.ZERO, Bit.ZERO};
+            Bit[] values = new Bit[SCSize];
+            for (int j = 0; j < SCSize; j++)
+                values[j] = Bit.ZERO;
             this.PHT.put(bits, values);
         }
 
