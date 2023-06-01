@@ -77,7 +77,6 @@ public class GAp implements BranchPredictor {
         SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
         PAPHT.put(concat, SC.read());
         this.BHR.insert(this.SC.read()[0]);
-s
     }
 
 
