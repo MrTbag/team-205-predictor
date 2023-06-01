@@ -63,6 +63,7 @@ public class GAg implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         Bit[] bits = this.BHR.read();
+        this.PHT.putIfAbsent(bits, getDefaultBlock());
         this.SC.load(this.PHT.get(bits));
         return BranchResult.of(this.SC.read()[0].getValue());
     }
