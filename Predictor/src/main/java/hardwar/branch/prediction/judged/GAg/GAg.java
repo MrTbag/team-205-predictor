@@ -4,6 +4,8 @@ import hardwar.branch.prediction.shared.*;
 import hardwar.branch.prediction.shared.devices.*;
 
 import java.util.Arrays;
+import java.util.BitSet;
+import java.lang.Math;
 
 public class GAg implements BranchPredictor {
     private final ShiftRegister BHR; // branch history register
@@ -23,13 +25,28 @@ public class GAg implements BranchPredictor {
     public GAg(int BHRSize, int SCSize) {
         // TODO : complete the constructor
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+       
+        this.BHR = new SIPORegister(null, BHRSize, getDefaultBlock());
 
         // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
-        PHT = null;
+        this.PHT = new PageHistoryTable((int) Math.pow(2, BHRSize), SCSize);
+        for (int i = 0; i < (int) Math.pow(2, BHRSize); i ++){
+            String st = Integer.toBinaryString(i);
+            Bit bits[];
+            bits = new Bit[st.length()];
+            for (int j = 0; j < st.length(); j ++){
+                if (st.charAt(j) == '0')
+                    bits[j] = Bit.ZERO;
+                else
+                    bits[j] = Bit.ONE;
+            }
+            Bit[] values = {Bit.ZERO, Bit.ZERO};
+            this.PHT.put(bits, values);
+        }
 
         // Initialize the SC register
-        SC = null;
+        SC = new SIPORegister(null, SCSize, getDefaultBlock());
+
     }
 
     /**
@@ -40,8 +57,9 @@ public class GAg implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // TODO : complete Task 1
-        return BranchResult.NOT_TAKEN;
+        Bit[] bits = this.BHR.read();
+        this.SC.load(this.PHT.get(bits));
+        return BranchResult.of(this.SC.read()[0].getValue());
     }
 
     /**
@@ -52,7 +70,17 @@ public class GAg implements BranchPredictor {
      */
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
-        // TODO: complete Task 2
+        Bit[] bits = this.BHR.read();
+        this.SC.load(this.PHT.get(bits));
+        if (BranchResult.isTaken(actual)){
+            this.SC.load(CombinationalLogic.count(SC.read(), true, CountMode.SATURATING));
+            this.PHT.put(bits, this.SC.read());
+        }
+        else{
+            this.SC.load(CombinationalLogic.count(SC.read(), false, CountMode.SATURATING));
+            this.PHT.put(bits, this.SC.read());
+        }
+        this.BHR.insert(this.SC.read()[0]);
     }
 
 
