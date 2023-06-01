@@ -65,15 +65,8 @@ public class GAg implements BranchPredictor {
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
         Bit[] bits = this.BHR.read();
-        this.SC.load(this.PHT.get(bits));
-        if (BranchResult.isTaken(actual)){
-            this.SC.load(CombinationalLogic.count(SC.read(), true, CountMode.SATURATING));
-            this.PHT.put(bits, this.SC.read());
-        }
-        else{
-            this.SC.load(CombinationalLogic.count(SC.read(), false, CountMode.SATURATING));
-            this.PHT.put(bits, this.SC.read());
-        }
+        this.SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
+        this.PHT.put(bits, this.SC.read());
         this.BHR.insert(this.SC.read()[0]);
     }
 
